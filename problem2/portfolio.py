@@ -66,8 +66,8 @@ def load_data(name, folder=None):
                 f"Expected 2 values for asset {i + 1}"
             )
 
-    r[i] = float(vals[0])
-    s[i] = float(vals[1])
+        r[i] = float(vals[0])
+        s[i] = float(vals[1])
 
     # Correlation matrix.
     c = np.zeros((n, n))
