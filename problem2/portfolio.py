@@ -61,10 +61,10 @@ def load_data(name, folder=None):
     for i in range(n):
         vals = lines[i + 1].split()
 
-    if len(vals) != 2:
-        raise ValueError(
-            f"Expected 2 values for asset {i + 1}"
-        )
+        if len(vals) != 2:
+            raise ValueError(
+                f"Expected 2 values for asset {i + 1}"
+            )
 
     r[i] = float(vals[0])
     s[i] = float(vals[1])
