@@ -182,3 +182,71 @@ def write_csv(path, rows):
         wr.writeheader()
         wr.writerows(rows)
 
+
+def run_All(budget=BUDGET):
+    """Run all datasets, return targets, algorithms and seeds"""
+
+    OUT.mkdir(exist_ok=True)
+
+    # Directory for convergence histories.
+    logs = OUT / "logs"
+    logs.mkdir(exist_ok=True)
+
+    rows = []
+
+    for ds in N_ASSETS:
+
+        # Load each dataset only once.
+        data = load_data(ds)
+
+        for key in ALPHAS:
+
+            case = f"{ds}_alpha{key}"
+
+            for alg in ALGS:
+
+                for seed in SEEDS:
+
+                    # Execute one experiment.
+                    row, hist = run_one(
+                        case,
+                        alg,
+                        seed,
+                        budget,
+                        data=data
+                    )
+
+                    rows.append(row)
+
+                    # Save convergence history.
+                    path = logs / (
+                        f"{case}_{alg}_seed{seed}.npz"
+                    )
+
+                    np.savez_compressed(
+                        path,
+                        hist=hist
+                    )
+
+                    # Print a short progress summary.
+                    print(
+                        f"{case:18} "
+                        f"{alg:5} "
+                        f"seed={seed} "
+                        f"var={row['variance']:.8g}",
+                        flush=True
+                    )
+
+                    # Save completed results after each run.
+                    write_csv(
+                        OUT / "runs.csv",
+                        rows
+                    )
+
+    # Generate final statistics.
+    write_csv(
+        OUT / "summary.csv",
+        summary(rows)
+    )
+
+    return rows
